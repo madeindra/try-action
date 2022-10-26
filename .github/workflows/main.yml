@@ -12,17 +12,28 @@ jobs:
     steps:
     - name: checkout repo
       uses: actions/checkout@v2
+      with: 
+          path: temp-dir
+    - name: copy content to vps
+     uses: garygrossgarten/github-action-scp@release
+     with:
+       local: temp-dir
+       remote: ~/app
+       host: ${{ secrets.HOST }}
+       username: ${{ secrets.USERNAME }}
+       privateKey: ${{secrets.PRIVATE_KEY}}
+       port: 22
     - name: deploy using ssh
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "."
         port: 22
         script: |
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
+          cd ~/app
           npm install --omit=dev
           npm start
 
