@@ -30,7 +30,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: 22
         script: |
-          cd ~/home/danielwetan/apps/node1
+          cd ~
           npm install --only=prod
           npm start
 
