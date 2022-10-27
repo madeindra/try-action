@@ -35,6 +35,6 @@ jobs:
           source ~/.nvm/nvm.sh
           cd ~/app
           npm install --omit=dev
-          npm start
+          node index.js
 
 
