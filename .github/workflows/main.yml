@@ -7,7 +7,7 @@ on:
     branches: [ master ]
     
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - name: checkout repo
@@ -15,14 +15,14 @@ jobs:
       with: 
           path: temp-dir
     - name: copy content to vps
-     uses: garygrossgarten/github-action-scp@release
-     with:
-       local: temp-dir
-       remote: ~/app
-       host: ${{ secrets.HOST }}
-       username: ${{ secrets.USERNAME }}
-       privateKey: ${{secrets.PRIVATE_KEY}}
-       port: 22
+      uses: garygrossgarten/github-action-scp@release
+      with:
+        local: temp-dir
+        remote: ~/app
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        privateKey: ${{secrets.PRIVATE_KEY}}
+        port: 22
     - name: deploy using ssh
       uses: appleboy/ssh-action@master
       with:
