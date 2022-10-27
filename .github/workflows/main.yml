@@ -7,32 +7,17 @@ on:
     branches: [ master ]
     
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout repo
-      uses: actions/checkout@v2
-    
-    - name: copy via ssh
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: 22
-        source: .,!node_modules
-        target: ~/app
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout
+              uses: actions/checkout@master
 
-    - name: deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: 22
-        script: |
-          export NVM_DIR=~/.nvm
-          source ~/.nvm/nvm.sh
-          cd ~/app
-          npm install --omit=dev
-          pm2 start index.js
+            - name: install rsync
+              run: sudo apt-get install rsync
+
+            - name: copy via ssh
+              run: - rsync -rvzD -e "ssh -o StrictHostKeyChecking=no" --exclude='.git/' --exclude='.github' ./ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/app
+            
+            - name: run app
+              run: ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} -t -t -o StrictHostKeyChecking=no "export NVM_DIR=~/.nvm && source ~/.nvm/nvm.sh && cd ~/app && npm install l --omit=dev && pm2 start index.js && exit"
